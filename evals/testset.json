@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "description": "Test questions about c:/AI/vault. Each case has expected source files that SHOULD appear in the answer's sources. Judge scores groundedness, relevance, completeness.",
+  "cases": [
+    {
+      "id": "q01-mcp-setup",
+      "question": "Когда я впервые настраивал Notion MCP и что было сделано?",
+      "expectedSourceFiles": ["logs/Session History.md", "logs/Weekly Log.md"],
+      "rubric": "Должен указать дату/неделю подключения Notion MCP и краткие действия."
+    },
+    {
+      "id": "q02-agent-dashboard-stack",
+      "question": "Какой стек у Agent Dashboard?",
+      "expectedSourceFiles": ["projects/Agent Dashboard.md"],
+      "rubric": "Перечислить ключевые технологии — фреймворк, язык, библиотеки."
+    },
+    {
+      "id": "q03-my-assistant-status",
+      "question": "Какой текущий статус проекта My Assistant?",
+      "expectedSourceFiles": ["projects/My Assistant.md"],
+      "rubric": "Статус проекта и последние изменения."
+    },
+    {
+      "id": "q04-content-channel-goal",
+      "question": "Какая цель проекта content-channel?",
+      "expectedSourceFiles": ["projects/Content Channel.md"],
+      "rubric": "Бизнес-цель + каналы публикации."
+    },
+    {
+      "id": "q05-apex-tracker",
+      "question": "Что такое Apex Tracker и зачем он нужен?",
+      "expectedSourceFiles": ["projects/Apex Tracker.md"],
+      "rubric": "Описание и назначение проекта."
+    },
+    {
+      "id": "q06-telegram-bots",
+      "question": "Какие telegram-боты у меня настроены?",
+      "expectedSourceFiles": [],
+      "rubric": "Перечислить боты (btw_aitech, news_seller_bot, personal) из логов/референсов."
+    },
+    {
+      "id": "q07-notion-sync-architecture",
+      "question": "Как устроен обсидиан-нотион sync?",
+      "expectedSourceFiles": ["projects/Obsidian Notion Sync Engine.md", "logs/Session History.md"],
+      "rubric": "Objection->Notion через notion-sync.js, Obsidian = source of truth."
+    },
+    {
+      "id": "q08-recent-work",
+      "question": "Над чем я работал на этой неделе?",
+      "expectedSourceFiles": ["daily/"],
+      "rubric": "Должен процитировать как минимум 2-3 daily записи за текущую неделю."
+    },
+    {
+      "id": "q09-beyond-oasis",
+      "question": "Чем отличается Beyond Oasis v2 от v1?",
+      "expectedSourceFiles": ["projects/Beyond Oasis v2.md", "projects/Beyond Oasis.md"],
+      "rubric": "Конкретные различия или ссылка на оба проекта."
+    },
+    {
+      "id": "q10-workflow-rules",
+      "question": "Какие правила логирования работы?",
+      "expectedSourceFiles": [],
+      "rubric": "4 действия на 'логируем' из CLAUDE.md (git commit, Obsidian, memory, notion-sync)."
+    },
+    {
+      "id": "q11-favicon",
+      "question": "Какой favicon у Agent Dashboard?",
+      "expectedSourceFiles": [],
+      "rubric": "Упомянуть cat-ассет (или что favicon основан на нём)."
+    },
+    {
+      "id": "q12-courseai",
+      "question": "Что известно про CourseAI?",
+      "expectedSourceFiles": ["projects/CourseAI.md"],
+      "rubric": "Краткое описание проекта."
+    },
+    {
+      "id": "q13-heroes-randomizer",
+      "question": "Для чего нужен Heroes Randomizer?",
+      "expectedSourceFiles": ["projects/Heroes Randomizer.md"],
+      "rubric": "Назначение и/или целевая аудитория."
+    },
+    {
+      "id": "q14-btw-pack",
+      "question": "Что такое BTW Agents Pack?",
+      "expectedSourceFiles": ["projects/BTW Agents Pack (OSS).md"],
+      "rubric": "OSS пакет, что в него входит."
+    },
+    {
+      "id": "q15-nonexistent",
+      "question": "Когда я внедрял систему квантовой телепортации в Kubernetes?",
+      "expectedSourceFiles": [],
+      "rubric": "Должен честно сказать 'нет данных', confidence <= 0.3. Это anti-hallucination тест."
+    }
+  ]
+}

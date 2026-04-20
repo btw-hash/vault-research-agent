@@ -1,0 +1,20 @@
+{
+  "name": "vault-research-agent",
+  "version": "0.1.0",
+  "description": "Multi-agent orchestrator that answers questions by researching Obsidian vault via MCP",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "eval": "node dist/evals/run.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
