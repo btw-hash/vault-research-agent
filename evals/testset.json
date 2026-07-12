@@ -1,96 +1,96 @@
 {
   "version": "1.0",
-  "description": "Test questions about c:/AI/vault. Each case has expected source files that SHOULD appear in the answer's sources. Judge scores groundedness, relevance, completeness.",
+  "description": "Test questions about the bundled demo-vault (a fictional company, Nimbus Labs). Each case has expected source files that SHOULD appear in the answer's sources. Judge scores groundedness, relevance, completeness.",
   "cases": [
     {
       "id": "q01-mcp-setup",
-      "question": "Когда я впервые настраивал Notion MCP и что было сделано?",
+      "question": "When was the analytics MCP integration first set up, and what was done?",
       "expectedSourceFiles": ["logs/Session History.md", "logs/Weekly Log.md"],
-      "rubric": "Должен указать дату/неделю подключения Notion MCP и краткие действия."
+      "rubric": "Should state the date/week the analytics MCP server was connected and briefly what was done."
     },
     {
-      "id": "q02-agent-dashboard-stack",
-      "question": "Какой стек у Agent Dashboard?",
-      "expectedSourceFiles": ["projects/Agent Dashboard.md"],
-      "rubric": "Перечислить ключевые технологии — фреймворк, язык, библиотеки."
+      "id": "q02-aurora-notebook-stack",
+      "question": "What's the tech stack for Aurora Notebook?",
+      "expectedSourceFiles": ["projects/Aurora Notebook.md"],
+      "rubric": "List key technologies — frontend framework, backend, database/embeddings."
     },
     {
-      "id": "q03-my-assistant-status",
-      "question": "Какой текущий статус проекта My Assistant?",
-      "expectedSourceFiles": ["projects/My Assistant.md"],
-      "rubric": "Статус проекта и последние изменения."
+      "id": "q03-beacon-cli-status",
+      "question": "What's the current status of Beacon CLI?",
+      "expectedSourceFiles": ["projects/Beacon CLI.md"],
+      "rubric": "Project status and the most recent change."
     },
     {
-      "id": "q04-content-channel-goal",
-      "question": "Какая цель проекта content-channel?",
-      "expectedSourceFiles": ["projects/Content Channel.md"],
-      "rubric": "Бизнес-цель + каналы публикации."
+      "id": "q04-waypoint-bot-goal",
+      "question": "What's the goal of the Waypoint Bot project?",
+      "expectedSourceFiles": ["projects/Waypoint Bot.md"],
+      "rubric": "Purpose of the bot and what problem it solves."
     },
     {
-      "id": "q05-apex-tracker",
-      "question": "Что такое Apex Tracker и зачем он нужен?",
-      "expectedSourceFiles": ["projects/Apex Tracker.md"],
-      "rubric": "Описание и назначение проекта."
+      "id": "q05-fleet-dashboard",
+      "question": "What is Fleet Dashboard and why does it exist?",
+      "expectedSourceFiles": ["projects/Fleet Dashboard.md"],
+      "rubric": "Description and purpose of the project."
     },
     {
-      "id": "q06-telegram-bots",
-      "question": "Какие telegram-боты у меня настроены?",
-      "expectedSourceFiles": [],
-      "rubric": "Перечислить боты (btw_aitech, news_seller_bot, personal) из логов/референсов."
+      "id": "q06-team-bots",
+      "question": "Which chat bots does the team have configured?",
+      "expectedSourceFiles": ["reference/Team Bots.md"],
+      "rubric": "Should list the bots (Waypoint Bot, Signal Relay) and what each is for."
     },
     {
-      "id": "q07-notion-sync-architecture",
-      "question": "Как устроен обсидиан-нотион sync?",
-      "expectedSourceFiles": ["projects/Obsidian Notion Sync Engine.md", "logs/Session History.md"],
-      "rubric": "Objection->Notion через notion-sync.js, Obsidian = source of truth."
+      "id": "q07-sync-architecture",
+      "question": "How is the Constellation Sync architecture designed?",
+      "expectedSourceFiles": ["projects/Constellation Sync.md", "logs/Session History.md"],
+      "rubric": "Block-level diffing with idempotent patches, last-write-wins per block, optional CRM mirror."
     },
     {
       "id": "q08-recent-work",
-      "question": "Над чем я работал на этой неделе?",
+      "question": "What did the team work on this week?",
       "expectedSourceFiles": ["daily/"],
-      "rubric": "Должен процитировать как минимум 2-3 daily записи за текущую неделю."
+      "rubric": "Should cite at least 2-3 daily entries from the current week."
     },
     {
-      "id": "q09-beyond-oasis",
-      "question": "Чем отличается Beyond Oasis v2 от v1?",
-      "expectedSourceFiles": ["projects/Beyond Oasis v2.md", "projects/Beyond Oasis.md"],
-      "rubric": "Конкретные различия или ссылка на оба проекта."
+      "id": "q09-aurora-vs-beacon-audience",
+      "question": "How does Aurora Notebook differ from Beacon CLI in target audience?",
+      "expectedSourceFiles": ["projects/Aurora Notebook.md", "projects/Beacon CLI.md"],
+      "rubric": "Aurora Notebook targets prosumers/writers; Beacon CLI targets infra engineers. Should reference both projects."
     },
     {
-      "id": "q10-workflow-rules",
-      "question": "Какие правила логирования работы?",
-      "expectedSourceFiles": [],
-      "rubric": "4 действия на 'логируем' из CLAUDE.md (git commit, Obsidian, memory, notion-sync)."
+      "id": "q10-logging-workflow",
+      "question": "What are the end-of-session logging rules the team follows?",
+      "expectedSourceFiles": ["reference/Style Guide.md"],
+      "rubric": "The 3 end-of-session steps (commit code, update the vault, note anything cross-project in Session History)."
     },
     {
       "id": "q11-favicon",
-      "question": "Какой favicon у Agent Dashboard?",
-      "expectedSourceFiles": [],
-      "rubric": "Упомянуть cat-ассет (или что favicon основан на нём)."
+      "question": "What is the Fleet Dashboard favicon based on?",
+      "expectedSourceFiles": ["projects/Fleet Dashboard.md"],
+      "rubric": "Should mention the fox mascot (Ember) the favicon is based on."
     },
     {
-      "id": "q12-courseai",
-      "question": "Что известно про CourseAI?",
-      "expectedSourceFiles": ["projects/CourseAI.md"],
-      "rubric": "Краткое описание проекта."
+      "id": "q12-constellation-sync-overview",
+      "question": "What is known about Constellation Sync?",
+      "expectedSourceFiles": ["projects/Constellation Sync.md"],
+      "rubric": "Brief description of the project and its role."
     },
     {
-      "id": "q13-heroes-randomizer",
-      "question": "Для чего нужен Heroes Randomizer?",
-      "expectedSourceFiles": ["projects/Heroes Randomizer.md"],
-      "rubric": "Назначение и/или целевая аудитория."
+      "id": "q13-waypoint-bot-issue",
+      "question": "What issue was found with Waypoint Bot's reminder pushes, and how was it fixed?",
+      "expectedSourceFiles": ["projects/Waypoint Bot.md", "daily/"],
+      "rubric": "Same-minute reminders were deduplicated by the notification tray; fixed by batching into one message with a unique tag."
     },
     {
-      "id": "q14-btw-pack",
-      "question": "Что такое BTW Agents Pack?",
-      "expectedSourceFiles": ["projects/BTW Agents Pack (OSS).md"],
-      "rubric": "OSS пакет, что в него входит."
+      "id": "q14-oss-kit",
+      "question": "What's included in the Nimbus Agents Kit open-source package?",
+      "expectedSourceFiles": ["projects/Nimbus Agents Kit (OSS).md"],
+      "rubric": "OSS pack: agent role-prompt templates, an MCP server template, and an eval-runner scaffold."
     },
     {
       "id": "q15-nonexistent",
-      "question": "Когда я внедрял систему квантовой телепортации в Kubernetes?",
+      "question": "When did we roll out the quantum teleportation module to Kubernetes?",
       "expectedSourceFiles": [],
-      "rubric": "Должен честно сказать 'нет данных', confidence <= 0.3. Это anti-hallucination тест."
+      "rubric": "Should honestly say 'no data', confidence <= 0.3. This is the anti-hallucination test."
     }
   ]
 }
