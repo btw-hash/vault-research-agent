@@ -1,11 +1,11 @@
 /**
- * Synthesizer agent — structured JSON answer через forced tool use.
+ * Synthesizer agent — structured JSON answer via forced tool use.
  *
- * Расширения:
- *   - revision mode: второй проход с JUDGE FEEDBACK для evaluator-optimizer loop
- *   - extended thinking: включается когда вопрос сложный (complex=true)
+ * Extensions:
+ *   - revision mode: a second pass with JUDGE FEEDBACK for the evaluator-optimizer loop
+ *   - extended thinking: switched on when the question is complex
  *
- * Sonnet для качества синтеза. Thinking — опционально, платишь токенами за думание.
+ * Sonnet for synthesis quality. Thinking is optional — you pay tokens for the model to think.
  */
 
 import type { LLMClient, ToolDef } from '../llm/types.js';
@@ -65,11 +65,11 @@ export interface SynthResult {
 }
 
 export interface SynthOptions {
-  /** Включить extended thinking (дороже, лучше на сложных вопросах). */
+  /** Enable extended thinking (costs more, helps on complex questions). */
   enableThinking?: boolean;
-  /** Бюджет токенов на thinking. */
+  /** Token budget for thinking. */
   thinkingBudget?: number;
-  /** Предыдущая попытка и замечания judge — включает revision mode. */
+  /** Previous attempt and judge notes — turns on revision mode. */
   revision?: {
     previousAnswer: Answer;
     judgeFeedback: string;

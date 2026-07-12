@@ -1,7 +1,7 @@
 /**
  * Planner agent.
- * Принимает вопрос, возвращает 2-5 подвопросов через forced tool.
- * Используем Haiku — задача декомпозиции простая, скорость важнее.
+ * Takes a question, returns 2-5 subquestions via forced tool use.
+ * Uses Haiku — decomposition is a simple task, speed matters more than depth.
  */
 
 import type { LLMClient, ToolDef } from '../llm/types.js';
@@ -50,7 +50,7 @@ export async function plan(llm: LLMClient, question: string): Promise<PlanResult
       {
         type: 'text',
         text: PLANNER_SYSTEM,
-        cache_control: { type: 'ephemeral' }, // кэшируем — system не меняется
+        cache_control: { type: 'ephemeral' }, // cached — system prompt never changes
       },
     ],
     messages: [{ role: 'user', content: question }],

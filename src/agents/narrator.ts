@@ -1,11 +1,11 @@
 /**
  * Narrator agent.
  *
- * Принимает структурированный Answer от synthesizer, стримит человеко-читаемую
- * прозаическую версию в CLI. Haiku — задача простая (переформатирование).
+ * Takes the structured Answer from the synthesizer and streams a human-readable
+ * prose version to the CLI. Haiku — the task is simple (reformatting).
  *
- * Это «последняя миля» — пока synthesizer выдаёт JSON (для машин/логов),
- * narrator даёт текст для глаз пользователя, токен за токеном.
+ * This is the "last mile": the synthesizer emits JSON (for machines/logs),
+ * the narrator gives the user text for their eyes, token by token.
  */
 
 import type { LLMClient, StreamEvent } from '../llm/types.js';
@@ -19,9 +19,9 @@ Your job: produce a flowing, friendly paragraph for the user.
 Style:
 - Conversational but precise.
 - 2-4 sentences.
-- Reference 1-2 most relevant sources inline (e.g. "по записи в Weekly Log...").
-- If confidence < 0.3, open with "В vault ничего чёткого не найдено, но..." and explain.
-- Match the user's language (usually Russian for this vault).
+- Reference 1-2 most relevant sources inline (e.g. "per the Weekly Log entry...").
+- If confidence < 0.3, open with "Nothing conclusive found in the vault, but..." and explain.
+- Answer in English unless the user's question was written in another language.
 
 Output PLAIN TEXT only. No markdown headers, no tool calls.`;
 
@@ -36,7 +36,7 @@ export async function narrate(
   const userPayload = JSON.stringify(answer, null, 2);
 
   if (!llm.completeStream) {
-    // Fallback на non-streaming если клиент не поддерживает
+    // Fallback to non-streaming if the client doesn't support it
     const res = await llm.complete({
       model: 'claude-haiku-4-5-20251001',
       system: [{ type: 'text', text: NARRATOR_SYSTEM, cache_control: { type: 'ephemeral' } }],

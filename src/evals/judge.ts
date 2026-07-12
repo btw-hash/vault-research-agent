@@ -1,12 +1,12 @@
 /**
  * LLM-as-judge.
  *
- * Оценивает ответ по 3 осям через forced tool. Opus/Sonnet (сильнее generator'а).
+ * Scores an answer along 3 axes via forced tool use. Opus/Sonnet (stronger than the generator).
  *
  * Rubric:
- *   - groundedness: каждое утверждение подкреплено source?
- *   - relevance: ответ на заданный вопрос, не в сторону?
- *   - completeness: покрыт ли тот rubric из test case?
+ *   - groundedness: is every claim backed by a source?
+ *   - relevance: does the answer address the question, no tangents?
+ *   - completeness: does it cover the rubric from the test case?
  */
 
 import type { LLMClient, ToolDef } from '../llm/types.js';

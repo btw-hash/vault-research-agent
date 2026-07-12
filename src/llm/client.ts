@@ -3,10 +3,10 @@ import { RealAnthropicClient } from './anthropic-real.js';
 import type { LLMClient } from './types.js';
 
 /**
- * Выбор клиента:
- *   - LLM_MODE=mock → всегда mock
- *   - LLM_MODE=real или задан ANTHROPIC_API_KEY → real
- *   - иначе mock (fallback для обучения)
+ * Client selection:
+ *   - LLM_MODE=mock → always mock
+ *   - LLM_MODE=real or ANTHROPIC_API_KEY set → real
+ *   - otherwise mock (zero-config fallback)
  */
 export function createLLMClient(): LLMClient {
   const mode = process.env.LLM_MODE;

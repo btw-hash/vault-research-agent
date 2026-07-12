@@ -1,6 +1,6 @@
 /**
- * Общие типы для LLM-слоя.
- * Совпадают по форме с Anthropic SDK, чтобы mock был drop-in.
+ * Shared types for the LLM layer.
+ * Shaped to match the Anthropic SDK so the mock client is a drop-in replacement.
  */
 
 export type Model = 'claude-haiku-4-5-20251001' | 'claude-sonnet-4-6' | 'claude-opus-4-7';
@@ -13,7 +13,7 @@ export interface ToolDef {
     properties: Record<string, unknown>;
     required?: string[];
   };
-  /** Если установлен — блок будет помечен cache_control при отправке */
+  /** If set, the block is tagged with cache_control when sent */
   cache_control?: { type: 'ephemeral' };
 }
 
@@ -56,7 +56,7 @@ export interface CompletionRequest {
   tool_choice?: { type: 'auto' } | { type: 'any' } | { type: 'tool'; name: string };
   max_tokens: number;
   temperature?: number;
-  /** Extended thinking — модель «думает» в отдельных thinking-блоках. */
+  /** Extended thinking — the model "thinks" in separate thinking blocks. */
   thinking?: { type: 'enabled'; budget_tokens: number };
 }
 

@@ -4,7 +4,7 @@
  * Modes (set by Router):
  *   - 'quick': Haiku, max 2 steps, only search_notes/list_projects
  *   - 'deep':  Sonnet, max 5 steps, full vault toolset including read_note
- *   - 'impossible': короткий путь без LLM, возвращает "no data"
+ *   - 'impossible': short-circuit path with no LLM call, returns "no data"
  */
 
 import type { LLMClient, Message, Model, ToolDef } from '../llm/types.js';
@@ -57,7 +57,7 @@ export async function runWorker(
   subquestion: string,
   track: Track
 ): Promise<WorkerResult> {
-  // Шорт-сёркит: impossible subquestion — без LLM.
+  // Short-circuit: impossible subquestion — no LLM call.
   if (track === 'impossible') {
     return {
       subquestion,
@@ -73,7 +73,7 @@ export async function runWorker(
   const maxSteps = isQuick ? 2 : 5;
   const system = isQuick ? WORKER_SYSTEM_QUICK : WORKER_SYSTEM_DEEP;
 
-  // Quick mode — режем toolset: только search + list, без read_note
+  // Quick mode — trim the toolset: search + list only, no read_note
   const allTools = mcp.toAnthropicTools();
   const tools: ToolDef[] = (
     isQuick ? allTools.filter((t) => t.name !== 'vault_read_note') : allTools

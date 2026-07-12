@@ -1,14 +1,14 @@
 /**
  * Router agent.
  *
- * Классификатор: subquestion → 'quick' | 'deep' | 'impossible'.
- * Haiku — задача простая, скорость и стоимость критичны.
+ * Classifier: subquestion → 'quick' | 'deep' | 'impossible'.
+ * Haiku — the task is simple, speed and cost are critical.
  *
- * Правила:
- *   - quick: factual lookup ("когда X?", "какой статус Y?") — 1 search достаточно
- *   - deep: analysis/comparison ("чем отличается A от B", "как устроено X") —
- *     нужно читать файлы целиком, возможно с extended thinking
- *   - impossible: заранее видно что в vault этого нет (анти-галлюцинация)
+ * Rules:
+ *   - quick: factual lookup ("when was X?", "what's the status of Y?") — 1 search is enough
+ *   - deep: analysis/comparison ("how does A differ from B", "how is X architected") —
+ *     needs to read whole files, possibly with extended thinking
+ *   - impossible: it's already clear the vault has nothing on this (anti-hallucination)
  */
 
 import type { LLMClient, ToolDef } from '../llm/types.js';

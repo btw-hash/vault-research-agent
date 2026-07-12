@@ -1,6 +1,6 @@
 /**
- * Настоящий клиент — тонкая обёртка над Anthropic SDK.
- * Активируется когда ANTHROPIC_API_KEY установлен и LLM_MODE != 'mock'.
+ * Real client — a thin wrapper over the Anthropic SDK.
+ * Active when ANTHROPIC_API_KEY is set and LLM_MODE != 'mock'.
  */
 
 import Anthropic from '@anthropic-ai/sdk';

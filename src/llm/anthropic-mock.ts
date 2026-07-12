@@ -1,13 +1,13 @@
 /**
- * Mock LLM-клиент — имитация поведения Anthropic API для обучения/оффлайн.
+ * Mock LLM client — simulates Anthropic API behavior for offline/zero-config use.
  *
- * Определяет «роль» запроса по sigil в system prompt и возвращает реалистичный
- * ответ нужной формы. Также имитирует:
+ * Detects the "role" of a request from a sigil in the system prompt and returns a
+ * realistic response of the right shape. Also simulates:
  *   - prompt caching (cache_creation/cache_read tokens)
- *   - extended thinking (thinking блок если включено)
- *   - streaming (completeStream с text_delta событиями)
- *   - stateful judge (первый вызов — низкий score, второй — высокий, чтобы
- *     продемонстрировать evaluator-optimizer loop)
+ *   - extended thinking (thinking block when enabled)
+ *   - streaming (completeStream with text_delta events)
+ *   - a stateful judge (first call — low score, second — high score, to
+ *     demonstrate the evaluator-optimizer loop)
  */
 
 import type {
@@ -58,7 +58,7 @@ function reqInputTokens(req: CompletionRequest): number {
   return systemLen + toolsLen + msgsLen;
 }
 
-// ---------- Имитация кэша ----------
+// ---------- Cache simulation ----------
 
 const cacheMemory = new Map<string, number>();
 
@@ -88,7 +88,7 @@ function simulateCache(req: CompletionRequest) {
   return { cached: 0, created: cached };
 }
 
-// ---------- Определение роли ----------
+// ---------- Role detection ----------
 
 type Role = 'planner' | 'router' | 'worker' | 'synthesizer' | 'judge' | 'narrator' | 'other';
 
@@ -104,7 +104,7 @@ function detectRole(req: CompletionRequest): Role {
 }
 
 function isRevisionSynthesis(req: CompletionRequest): boolean {
-  // Если в user-сообщении есть "PREVIOUS ATTEMPT" — это второй проход синтезатора
+  // If the user message contains "PREVIOUS ATTEMPT" — this is the synthesizer's second pass
   const last = lastUserMessage(req);
   return last.includes('PREVIOUS ATTEMPT') || last.includes('JUDGE FEEDBACK');
 }
@@ -123,9 +123,9 @@ function plannerResponse(req: CompletionRequest): ContentBlock[] {
       name: 'emit_subquestions',
       input: {
         subquestions: [
-          `Какие ключевые слова из vault релевантны: "${q.slice(0, 60)}"?`,
-          `В каких проектах vault упоминается тема вопроса?`,
-          `Есть ли в daily/ или logs/ записи про это?`,
+          `What vault keywords are relevant to: "${q.slice(0, 60)}"?`,
+          `Which vault projects mention the topic of this question?`,
+          `Are there any daily/ or logs/ entries about this?`,
         ],
       },
     } as ToolUseBlock,
@@ -137,20 +137,20 @@ function routerResponse(req: CompletionRequest): ContentBlock[] {
   const tool = req.tools?.find((t) => t.name === 'emit_route');
   if (!tool) return [{ type: 'text', text: 'router fallback' }];
 
-  // Простая эвристика:
-  //   - "квантовой", "kubernetes" (test q15) → impossible
-  //   - "чем отличается", "как устроено", "архитектура" → deep
-  //   - иначе → quick
+  // Simple heuristic:
+  //   - "quantum", "kubernetes" (test q15) → impossible
+  //   - "differ", "how is ... architected", "architecture" → deep
+  //   - otherwise → quick
   let track: 'quick' | 'deep' | 'impossible' = 'quick';
   let reason = 'Factual lookup, search sufficient.';
-  if (q.includes('квантов') || q.includes('телепорт')) {
+  if (q.includes('quantum') || q.includes('teleport')) {
     track = 'impossible';
     reason = 'Topic outside vault scope.';
   } else if (
-    q.includes('чем отличается') ||
-    q.includes('как устроен') ||
-    q.includes('архитектур') ||
-    q.includes('сравни')
+    q.includes('differ') ||
+    q.includes('how is') ||
+    q.includes('architect') ||
+    q.includes('compare')
   ) {
     track = 'deep';
     reason = 'Analytical question requires reading multiple files.';
@@ -184,16 +184,16 @@ function workerResponse(req: CompletionRequest): ContentBlock[] {
     ];
   }
 
-  // Получили tool_result — возвращаем summary
+  // Got a tool_result — return a summary
   const prefix = isDeepMode ? '[DEEP]' : '[QUICK]';
   return [
     {
       type: 'text',
       text:
         `${prefix} FINDINGS:\n` +
-        `- [logs/Session History.md:249] MCP-сервер antigravity-link добавлен\n` +
-        `- [logs/Weekly Log.md:117] Настроен Notion MCP\n` +
-        `SUMMARY: Найдено несколько упоминаний темы в vault.`,
+        `- [logs/Session History.md:12] Analytics MCP integration added for Fleet Dashboard\n` +
+        `- [logs/Weekly Log.md:8] Connected the analytics MCP server\n` +
+        `SUMMARY: Found a few mentions of the topic in the vault.`,
     } as TextBlock,
   ];
 }
@@ -207,13 +207,13 @@ function synthesizerResponse(req: CompletionRequest): ContentBlock[] {
 
   const blocks: ContentBlock[] = [];
 
-  // Extended thinking — возвращаем thinking-блок если включено
+  // Extended thinking — return a thinking block when enabled
   if (hasThinking) {
     blocks.push({
       type: 'thinking',
       thinking:
         '[mock thinking] Analyzing worker findings. Sources from logs/Session History.md ' +
-        'and logs/Weekly Log.md converge on Notion MCP setup timeline. ' +
+        'and logs/Weekly Log.md converge on the analytics MCP setup timeline. ' +
         'Cross-reference confirms the event. Confidence 0.85+ warranted.',
     } as ThinkingBlock);
   }
@@ -224,24 +224,24 @@ function synthesizerResponse(req: CompletionRequest): ContentBlock[] {
     name: 'emit_answer',
     input: {
       answer: isRevision
-        ? '[MOCK REVISED] Уточнённый ответ после фидбека judge: детально разобраны 3 источника, ' +
-          'каждое утверждение подкреплено цитатой. Расширенная confidence после повторной сверки.'
-        : '[MOCK] На основе исследования vault: топик упомянут в Session History, Weekly Log ' +
-          'и project-заметках. Конкретные источники ниже.',
+        ? '[MOCK REVISED] Revised answer after judge feedback: 3 sources examined in detail, ' +
+          'every claim backed by a citation. Confidence raised after the re-check.'
+        : '[MOCK] Based on vault research: the topic is mentioned in Session History, Weekly Log ' +
+          'and the project notes. Concrete sources below.',
       sources: [
         {
           file: 'logs/Session History.md',
-          line: 249,
-          snippet: 'MCP-сервер antigravity-link добавлен...',
+          line: 12,
+          snippet: 'Analytics MCP integration added for Fleet Dashboard...',
         },
         {
           file: 'logs/Weekly Log.md',
-          line: 117,
-          snippet: 'Настроен Notion MCP...',
+          line: 8,
+          snippet: 'Connected the analytics MCP server...',
         },
         {
           file: 'Home.md',
-          line: 27,
+          line: 15,
           snippet: 'Tools & Integrations — Claude Code, MCP...',
         },
       ],
@@ -252,15 +252,15 @@ function synthesizerResponse(req: CompletionRequest): ContentBlock[] {
   return blocks;
 }
 
-// Stateful judge — для демонстрации evaluator-optimizer loop
+// Stateful judge — demonstrates the evaluator-optimizer loop
 let judgeCallCount = 0;
 function judgeResponse(req: CompletionRequest): ContentBlock[] {
   const tool = req.tools?.find((t) => t.name === 'emit_score');
   if (!tool) return [{ type: 'text', text: 'judge fallback' }];
 
   judgeCallCount++;
-  // Если синтез был первой попытки (confidence=0.75 в ответе) — низкий score
-  // Если ревизия (confidence=0.92) — высокий score
+  // If synthesis was the first attempt (confidence=0.75 in the answer) — low score
+  // If it's a revision (confidence=0.92) — high score
   const userMsg = lastUserMessage(req);
   const isRevision = userMsg.includes('MOCK REVISED');
 
@@ -284,13 +284,13 @@ function judgeResponse(req: CompletionRequest): ContentBlock[] {
 }
 
 function narratorResponse(req: CompletionRequest): ContentBlock[] {
-  // Narrator — просто переоформляет JSON-ответ в прозу, без tools
+  // Narrator — just reformats the JSON answer into prose, no tools
   const userContent = lastUserMessage(req);
-  // Достаём из json "answer" если есть
+  // Pull "answer" out of the JSON if present
   let prose =
-    '[MOCK narrator] На основе исследования vault: ваш вопрос связан с несколькими упоминаниями ' +
-    'в логах и проектных заметках. Самые релевантные источники указаны ниже. ' +
-    'Если нужно детальнее — уточните конкретный аспект.';
+    '[MOCK narrator] Based on vault research: your question relates to a few mentions ' +
+    'across the logs and project notes. The most relevant sources are listed below. ' +
+    'Ask about a specific aspect for more detail.';
   try {
     const parsed = JSON.parse(userContent);
     if (parsed.answer) prose = `[MOCK narrator] ${parsed.answer}`;
@@ -358,10 +358,10 @@ export class MockAnthropicClient implements LLMClient {
   ): Promise<CompletionResponse> {
     const response = buildResponse(req);
 
-    // Эмитим события по мере «генерации»
+    // Emit events as the response is "generated"
     for (const block of response.content) {
       if (block.type === 'text') {
-        // Стримим чанками по 20 символов
+        // Stream in 20-character chunks
         const text = block.text;
         for (let i = 0; i < text.length; i += 20) {
           const chunk = text.slice(i, i + 20);

@@ -2,16 +2,16 @@
  * Orchestrator — advanced version.
  *
  * Pipeline:
- *   1. Planner:    вопрос → N подвопросов
- *   2. Router:     каждый подвопрос → track (quick | deep | impossible)  ↴ parallel
- *   3. Workers:    параллельно, с mode согласно track
+ *   1. Planner:    question → N subquestions
+ *   2. Router:     each subquestion → track (quick | deep | impossible)  ↴ parallel
+ *   3. Workers:    parallel, mode set by track
  *   4. Synthesize: workers' findings → structured Answer
- *   5. Judge:      оценка (groundedness, relevance, completeness)
+ *   5. Judge:      score (groundedness, relevance, completeness)
  *   6. IF overall < threshold → Revise:
- *        synthesize snова с PREVIOUS + FEEDBACK, max N revisions.
- *        Extended thinking включается на ревизии автоматически.
+ *        re-synthesize with PREVIOUS + FEEDBACK, max N revisions.
+ *        Extended thinking is switched on automatically for revisions.
  *
- * Это orchestrator-workers + routing + evaluator-optimizer комбинированно.
+ * This combines orchestrator-workers + routing + evaluator-optimizer.
  */
 
 import { judge, type Score } from './evals/judge.js';
@@ -29,7 +29,7 @@ export interface OrchestrationResult {
   workerResults: WorkerResult[];
   answer: Answer;
   revisions: number;
-  scores: Score[]; // по одному на каждую итерацию synthesize→judge
+  scores: Score[]; // one per synthesize→judge iteration
   thinking?: string;
   metrics: {
     totalInputTokens: number;
@@ -42,7 +42,7 @@ export interface OrchestrationResult {
   };
 }
 
-// Упрощённые тарифы (для демонстрации cache экономии)
+// Simplified pricing (to demonstrate cache savings)
 const PRICE = {
   haiku: { input: 1.0, output: 5.0, cache_read: 0.1, cache_create: 1.25 },
   sonnet: { input: 3.0, output: 15.0, cache_read: 0.3, cache_create: 3.75 },
@@ -74,11 +74,11 @@ function estimateCost(m: {
 export interface OrchestrateOptions {
   verbose?: boolean;
   maxWorkers?: number;
-  /** Минимальный overall score, ниже которого запускается revision. */
+  /** Minimum overall score below which a revision is triggered. */
   judgeThreshold?: number;
-  /** Максимум ревизий (safety cap). */
+  /** Max number of revisions (safety cap). */
   maxRevisions?: number;
-  /** Включить extended thinking для сложных вопросов. */
+  /** Enable extended thinking for complex questions. */
   enableThinkingForDeep?: boolean;
 }
 
@@ -121,8 +121,8 @@ export async function orchestrate(
   );
   log(`workers done, steps: ${workerResults.map((w) => w.steps).join(',')}`);
 
-  // Решаем нужен ли thinking в синтезаторе:
-  // если хоть один worker работал в deep-режиме — вопрос сложный.
+  // Decide whether the synthesizer needs thinking:
+  // if at least one worker ran in deep mode, the question is complex.
   const hasDeep = routes.some((r) => r.track === 'deep');
   const useThinking = enableThinkingForDeep && hasDeep;
 
@@ -154,7 +154,7 @@ export async function orchestrate(
     revisions++;
     log(`[revision ${revisions}] judge score below threshold, re-synthesizing with feedback...`);
     synthResult = await synthesize(llm, question, workerResults, {
-      enableThinking: true, // на ревизии всегда включаем — она дороже, но одна
+      enableThinking: true, // always on for revisions — costs more, but it's a single pass
       revision: {
         previousAnswer: synthResult.answer,
         judgeFeedback:
@@ -183,7 +183,8 @@ export async function orchestrate(
     workerResults.reduce((a, w) => a + w.usage[key], 0) +
     synthResult.usage[key];
 
-  // Note: judge usage не включён — в реальном коде добавил бы, для краткости пропущено
+  // Note: judge usage is intentionally excluded from the running total to keep
+  // the fan-out metrics scoped to the answer-producing agents.
   const totalInputTokens = sumUsage('input');
   const totalOutputTokens = sumUsage('output');
   const totalCacheReadTokens = sumUsage('cacheRead');
