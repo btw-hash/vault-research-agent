@@ -1,16 +1,29 @@
 /**
  * Eval runner.
  *
- * Гоняет весь orchestrator на test cases, собирает judge-оценки,
- * выдаёт aggregate отчёт и сохраняет detailed JSON для регрессий.
+ * Runs the whole orchestrator over the test cases, collects judge scores,
+ * prints an aggregate report and saves a detailed JSON for regression tracking.
  */
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createLLMClient } from '../llm/client.js';
 import { VaultMCPClient } from '../mcp/vault-client.js';
 import { orchestrate } from '../orchestrator.js';
 import { judge, type Score } from './judge.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Vendored MCP server, built alongside this project (see vendor/mcp-obsidian, npm run build:mcp).
+const DEFAULT_MCP_SERVER_PATH = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'vendor',
+  'mcp-obsidian',
+  'dist',
+  'index.js'
+);
 
 interface TestCase {
   id: string;
@@ -31,14 +44,14 @@ interface CaseResult {
 
 async function main() {
   const llm = createLLMClient();
-  const mcp = new VaultMCPClient('c:/AI/mcp-obsidian/dist/index.js');
+  const mcp = new VaultMCPClient(process.env.MCP_SERVER_PATH ?? DEFAULT_MCP_SERVER_PATH);
   await mcp.connect();
 
   const testsetPath = path.resolve(process.cwd(), 'evals/testset.json');
   const testset = JSON.parse(await fs.readFile(testsetPath, 'utf-8'));
   const cases: TestCase[] = testset.cases;
 
-  // Для экономии: можно ограничить через env EVAL_LIMIT
+  // To save cost: can be limited via env EVAL_LIMIT
   const limit = process.env.EVAL_LIMIT ? Number(process.env.EVAL_LIMIT) : cases.length;
   const selected = cases.slice(0, limit);
 
@@ -130,7 +143,7 @@ async function main() {
   await fs.writeFile(reportPath, JSON.stringify({ aggregate, results }, null, 2));
   console.error(`\nreport: ${reportPath}`);
 
-  // Regression threshold (пример)
+  // Regression threshold (example)
   const THRESHOLD = 0.65;
   if (aggregate.avgOverall < THRESHOLD) {
     console.error(`\n[FAIL] avg overall ${aggregate.avgOverall.toFixed(3)} < ${THRESHOLD}`);

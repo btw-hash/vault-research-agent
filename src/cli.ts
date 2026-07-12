@@ -1,21 +1,34 @@
 #!/usr/bin/env node
 /**
- * CLI entrypoint — с streaming через narrator agent.
+ * CLI entrypoint — streams the answer through the narrator agent.
  *
  * Pipeline: orchestrate → structured Answer → narrate (stream) → print tokens live.
  *
  * Usage:
- *   npm start -- "твой вопрос"
- *   VERBOSE=1 npm start -- "вопрос"                  # логи orchestrator'а
- *   LLM_MODE=mock npm start -- "вопрос"              # форсить mock
- *   JUDGE_THRESHOLD=0.8 npm start -- "вопрос"        # триггерить revision агрессивнее
- *   NO_STREAM=1 npm start -- "вопрос"                # отключить streaming
+ *   npm start -- "your question"
+ *   VERBOSE=1 npm start -- "question"                # orchestrator logs
+ *   LLM_MODE=mock npm start -- "question"             # force mock
+ *   JUDGE_THRESHOLD=0.8 npm start -- "question"       # trigger revision more aggressively
+ *   NO_STREAM=1 npm start -- "question"               # disable streaming
  */
 
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { narrate } from './agents/narrator.js';
 import { createLLMClient } from './llm/client.js';
 import { VaultMCPClient } from './mcp/vault-client.js';
 import { orchestrate } from './orchestrator.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Vendored MCP server, built alongside this project (see vendor/mcp-obsidian, npm run build:mcp).
+const DEFAULT_MCP_SERVER_PATH = path.resolve(
+  __dirname,
+  '..',
+  'vendor',
+  'mcp-obsidian',
+  'dist',
+  'index.js'
+);
 
 async function main() {
   const question = process.argv.slice(2).join(' ').trim();
@@ -25,7 +38,7 @@ async function main() {
   }
 
   const llm = createLLMClient();
-  const mcp = new VaultMCPClient('c:/AI/mcp-obsidian/dist/index.js');
+  const mcp = new VaultMCPClient(process.env.MCP_SERVER_PATH ?? DEFAULT_MCP_SERVER_PATH);
   await mcp.connect();
 
   try {
@@ -50,7 +63,7 @@ async function main() {
       console.log(`  • ${s.file}${s.line ? `:${s.line}` : ''}\n      "${s.snippet.slice(0, 140)}"`);
     });
 
-    // === Thinking (если был) ===
+    // === Thinking (if any) ===
     if (result.thinking) {
       console.log('\n--- Synthesizer thinking (extended) ---');
       console.log(result.thinking.slice(0, 400) + (result.thinking.length > 400 ? '...' : ''));
