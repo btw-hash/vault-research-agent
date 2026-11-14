@@ -10,6 +10,11 @@ Ships with a bundled fictional demo vault (`demo-vault/`, a fictional company "N
 Labs") and a mock LLM client, so it runs **zero-config from a clean clone** — no API
 key required.
 
+**Evaluated, not just demoed.** `npm run eval` runs 15 test questions through the full
+pipeline, scores every answer with an LLM judge on groundedness, relevance and
+completeness, and exits non-zero below a regression threshold, so it can gate CI. See
+[Eval harness](#eval-harness).
+
 ## Pipeline
 
 ```
